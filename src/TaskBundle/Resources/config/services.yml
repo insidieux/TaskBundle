@@ -1,0 +1,11 @@
+services:
+  task.services.pusher:
+    class: TaskBundle\Services\Pusher
+    arguments:
+      - '@doctrine.orm.entity_manager'
+
+  task.services.locker:
+    class: TaskBundle\Services\Locker
+    public: false
+    arguments:
+      - '@doctrine.orm.entity_manager'

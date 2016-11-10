@@ -1,0 +1,36 @@
+{
+  "name": "insidieux/task-bundle",
+  "type": "symfony-bundle",
+  "description": "Symfony task bundle",
+  "keywords": [
+    "insidieux",
+    "symfony",
+    "bundle",
+    "tasks"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Barakin Alexandr"
+    },
+    {
+      "name": "Ageev Pavel",
+      "email": "ageev.pavel.v@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.0",
+    "doctrine/orm": "2.5.*",
+    "stof/doctrine-extensions-bundle": "1.2.*",
+    "symfony/config": "3.1.*",
+    "symfony/console": "3.1.*",
+    "symfony/dependency-injection": "3.1.*",
+    "symfony/http-kernel": "3.1.*",
+    "symfony/framework-bundle": "3.1.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "TaskBundle\\": "src/TaskBundle"
+    }
+  }
+}
