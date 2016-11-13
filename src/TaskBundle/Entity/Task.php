@@ -82,6 +82,7 @@ class Task
      * @var \DateTime
      *
      * @Gedmo\Timestampable(on="update")
+     * @Gedmo\Timestampable(on="create")
      * @ORM\Column(name="updated", type="datetime", nullable=false)
      */
     private $updated;

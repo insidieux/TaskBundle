@@ -9,14 +9,14 @@ use TaskBundle\Entity\Task;
  * @package TaskBundle\Repository
  *
  * @method Task findOneBy(array $criteria, array $orderBy = null)
- * @method Task findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Task[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class TaskRepository extends EntityRepository
 {
     /**
      * @param string $namespace
      * @param int    $item
-     * @return Task
+     * @return Task[]
      */
     public function byNamespaceAndItem(string $namespace, int $item)
     {
