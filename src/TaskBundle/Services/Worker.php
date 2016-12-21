@@ -5,6 +5,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use TaskBundle\Event\FilterTaskLockEvent;
 use TaskBundle\Exceptions\FinishError;
 use TaskBundle\Exceptions\FinishRetry;
 use TaskBundle\Exceptions\FinishSkip;
@@ -68,6 +69,14 @@ class Worker extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $event = new FilterTaskLockEvent($this->getNamespace(), $input->getOption('id'));
+        $this->getContainer()->get('event_dispatcher')->dispatch(FilterTaskLockEvent::NAME, $event);
+
+        if ($event->isPropagationStopped() === true) {
+            $output->writeln("Another service asked to stop process queue");
+            return;
+        }
+
         $task = $this->getLocker()->lock($this->getNamespace(), $input->getOption('id'));
         if (!$task) {
             $output->writeln("Empty tasks queue, exit");
