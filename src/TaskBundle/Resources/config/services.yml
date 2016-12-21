@@ -9,3 +9,10 @@ services:
     public: false
     arguments:
       - '@doctrine.orm.entity_manager'
+      - '@task.services.repository'
+
+  task.services.repository:
+    class: Doctrine\ORM\EntityRepository
+    factory: ['@doctrine.orm.default_entity_manager', getRepository]
+    arguments:
+        - TaskBundle:Task

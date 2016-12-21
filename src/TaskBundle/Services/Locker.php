@@ -18,11 +18,13 @@ class Locker
 
     /**
      * Locker constructor.
-     * @param EntityManager $entityManager
+     * @param EntityManager  $entityManager
+     * @param TaskRepository $entityRepository
      */
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $entityManager, TaskRepository $entityRepository)
     {
         $this->entityManager = $entityManager;
+        $this->entityRepository = $entityRepository;
     }
 
     /**
@@ -38,7 +40,7 @@ class Locker
      */
     private function getEntityRepository()
     {
-        return $this->getEntityManager()->getRepository('TaskBundle:Task');
+        return $this->entityRepository;
     }
 
     /**
@@ -54,23 +56,19 @@ class Locker
             return false;
         }
 
-        $query = $this->getEntityManager()
-            ->createQueryBuilder()
-            ->update('TaskBundle:Task', 'task')
-            ->set('task.state', ':set_state')
-            ->set('task.worker', ':set_worker')
-            ->where('task.state = :query_state')
-            ->andWhere('task.worker = :query_worker')
-            ->andWhere('task.namespace = :query_namespace')
-            ->setMaxResults(1)
-            ->setParameter('set_state', Task::STATE_PROCESS)
-            ->setParameter('set_worker', $worker)
-            ->setParameter('query_namespace', $namespace)
-            ->setParameter('query_state', Task::STATE_WAIT)
-            ->setParameter('query_worker', 0)
-            ->getQuery();
-        $lock = $query->execute();
-        if ($lock == 0) {
+        $query = "UPDATE tasks_queue SET state = :set_state, worker = :set_worker WHERE id IN (SELECT id FROM tasks_queue WHERE state = :query_state AND worker = :query_worker AND namespace = :query_namespace ORDER BY updated ASC LIMIT 1)";
+        $parameters = [
+            'set_state'       => Task::STATE_PROCESS,
+            'set_worker'      => $worker,
+            'query_namespace' => $namespace,
+            'query_state'     => Task::STATE_WAIT,
+            'query_worker'    => 0,
+        ];
+
+        $lock = $this->getEntityManager()
+            ->getConnection()
+            ->executeUpdate($query, $parameters);
+        if ($lock === 0) {
             return false;
         }
 
@@ -91,4 +89,3 @@ class Locker
         $this->getEntityManager()->flush($task);
     }
 }
-
