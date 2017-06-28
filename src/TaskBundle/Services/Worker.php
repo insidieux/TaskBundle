@@ -18,24 +18,32 @@ use TaskBundle\Exceptions\FinishSuccess;
 class Worker extends ContainerAwareCommand
 {
     /**
-     * @var string
-     */
-    private $namespace;
-
-    /**
      * @var Locker
      */
     private $locker;
 
     /**
-     * Worker constructor.
-     * @param string $namespace
-     * @param Locker $locker
+     * @var string
      */
-    public function __construct(Locker $locker, string $namespace)
+    private $namespace;
+
+    /**
+     * @var bool
+     */
+    private $debug;
+
+    /**
+     * Worker constructor.
+     *
+     * @param Locker $locker
+     * @param string $namespace
+     * @param bool   $debug
+     */
+    public function __construct(Locker $locker, string $namespace, bool $debug = false)
     {
         $this->locker = $locker;
         $this->namespace = $namespace;
+        $this->debug = $debug;
         parent::__construct(sprintf('task:worker:%s', $namespace));
     }
 
@@ -73,13 +81,17 @@ class Worker extends ContainerAwareCommand
         $this->getContainer()->get('event_dispatcher')->dispatch(FilterTaskLockEvent::NAME, $event);
 
         if ($event->isPropagationStopped() === true) {
-            $output->writeln("Another service asked to stop process queue");
+            if ($this->debug === true) {
+                $output->writeln("Another service asked to stop process queue");
+            }
             return;
         }
 
         $task = $this->getLocker()->lock($this->getNamespace(), $input->getOption('id'));
         if (!$task) {
-            $output->writeln("Empty tasks queue, exit");
+            if ($this->debug === true) {
+                $output->writeln("Empty tasks queue, exit");
+            }
             return;
         }
 

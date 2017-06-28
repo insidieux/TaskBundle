@@ -22,6 +22,11 @@ class Configuration implements ConfigurationInterface
             ->arrayNode('namespaces')
             ->prototype('scalar')->end()
             ->end();
+        $rootNode
+            ->children()
+            ->booleanNode("debug")
+            ->defaultFalse()
+            ->end();
         return $treeBuilder;
     }
 }
