@@ -26,6 +26,7 @@ Usage
 First of all, you need to add some new namespaces to separate task processing:
 ```yml
 task:
+  debug: true
   namespaces:
     - 'namespace1'
     - 'namespace2'
