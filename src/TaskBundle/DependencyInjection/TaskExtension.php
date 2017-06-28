@@ -24,27 +24,36 @@ class TaskExtension extends Extension
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
 
+        $debug = $config['debug'] ?? false;
+        $debug = (bool)$debug;
+
         if (isset($config['namespaces'])) {
             foreach ($config['namespaces'] as $namespace) {
-                $container->setDefinition(sprintf('task.worker.%s', $namespace), $this->makeWorker($namespace));
+                $container->setDefinition(
+                    sprintf('task.worker.%s', $namespace),
+                    $this->makeWorker($namespace, $debug)
+                );
             }
         }
 
         if (!$container->hasDefinition('task.worker.common')) {
-            $container->setDefinition('task.worker.common', $this->makeWorker('common'));
+            $container->setDefinition('task.worker.common', $this->makeWorker('common', $debug));
         }
     }
 
     /**
      * @param string $namespace
+     * @param bool   $debug
+     *
      * @return Definition
      */
-    private function makeWorker(string $namespace)
+    private function makeWorker(string $namespace, bool $debug): Definition
     {
         $definition = new Definition();
         $definition->setClass('TaskBundle\Services\Worker');
         $definition->addArgument(new Reference('task.services.locker'));
         $definition->addArgument($namespace);
+        $definition->addArgument($debug);
         $definition->setPublic(true);
         $definition->setAbstract(false);
         $definition->addTag('console.command');
