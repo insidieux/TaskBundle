@@ -1,12 +1,14 @@
 <?php
+
 namespace TaskBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use TaskBundle\Handler\AbstractHandler;
+use \Doctrine\ORM\Mapping as ORM;
+use \Gedmo\Mapping\Annotation as Gedmo;
+use \TaskBundle\Handler\AbstractHandler;
 
 /**
  * Class Task
+ *
  * @package TaskBundle\Entity
  *
  * @ORM\Entity(repositoryClass="TaskBundle\Repository\TaskRepository")
@@ -112,11 +114,13 @@ class Task
 
     /**
      * @param string $namespace
+     *
      * @return Task
      */
     public function setNamespace(string $namespace): Task
     {
         $this->namespace = $namespace;
+
         return $this;
     }
 
@@ -130,11 +134,13 @@ class Task
 
     /**
      * @param int $item
+     *
      * @return Task
      */
     public function setItem(int $item): Task
     {
         $this->item = $item;
+
         return $this;
     }
 
@@ -148,11 +154,13 @@ class Task
 
     /**
      * @param int $state
+     *
      * @return Task
      */
     public function setState(int $state): Task
     {
         $this->state = $state;
+
         return $this;
     }
 
@@ -166,11 +174,13 @@ class Task
 
     /**
      * @param int $worker
+     *
      * @return Task
      */
     public function setWorker(int $worker): Task
     {
         $this->worker = $worker;
+
         return $this;
     }
 
@@ -184,11 +194,13 @@ class Task
 
     /**
      * @param AbstractHandler $handler
+     *
      * @return Task
      */
     public function setHandler(AbstractHandler $handler): Task
     {
         $this->handler = $handler;
+
         return $this;
     }
 
@@ -218,11 +230,13 @@ class Task
 
     /**
      * @param string $error
+     *
      * @return Task
      */
     public function setError(string $error): Task
     {
         $this->error = $error;
+
         return $this;
     }
 }

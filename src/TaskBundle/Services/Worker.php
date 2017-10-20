@@ -1,18 +1,20 @@
 <?php
+
 namespace TaskBundle\Services;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
-use TaskBundle\Event\FilterTaskLockEvent;
-use TaskBundle\Exceptions\FinishError;
-use TaskBundle\Exceptions\FinishRetry;
-use TaskBundle\Exceptions\FinishSkip;
-use TaskBundle\Exceptions\FinishSuccess;
+use \Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use \Symfony\Component\Console\Input\InputInterface;
+use \Symfony\Component\Console\Input\InputOption;
+use \Symfony\Component\Console\Output\OutputInterface;
+use \TaskBundle\Event\FilterTaskLockEvent;
+use \TaskBundle\Exceptions\FinishError;
+use \TaskBundle\Exceptions\FinishRetry;
+use \TaskBundle\Exceptions\FinishSkip;
+use \TaskBundle\Exceptions\FinishSuccess;
 
 /**
  * Class Worker
+ *
  * @package TaskBundle\Services
  */
 class Worker extends ContainerAwareCommand
@@ -44,7 +46,7 @@ class Worker extends ContainerAwareCommand
         $this->locker = $locker;
         $this->namespace = $namespace;
         $this->debug = $debug;
-        parent::__construct(sprintf('task:worker:%s', $namespace));
+        parent::__construct(\sprintf('task:worker:%s', $namespace));
     }
 
     /**
@@ -61,6 +63,14 @@ class Worker extends ContainerAwareCommand
     private function getNamespace(): string
     {
         return $this->namespace;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDebug(): bool
+    {
+        return $this->debug;
     }
 
     /**
@@ -81,17 +91,19 @@ class Worker extends ContainerAwareCommand
         $this->getContainer()->get('event_dispatcher')->dispatch(FilterTaskLockEvent::NAME, $event);
 
         if ($event->isPropagationStopped() === true) {
-            if ($this->debug === true) {
+            if ($this->isDebug() === true) {
                 $output->writeln("Another service asked to stop process queue");
             }
+
             return;
         }
 
         $task = $this->getLocker()->lock($this->getNamespace(), $input->getOption('id'));
         if (!$task) {
-            if ($this->debug === true) {
+            if ($this->isDebug() === true) {
                 $output->writeln("Empty tasks queue, exit");
             }
+
             return;
         }
 
@@ -119,10 +131,10 @@ class Worker extends ContainerAwareCommand
             $task->setError($exception->getMessage());
             $task->setState($task::STATE_DONE_BAD);
             $output->writeln("Task #{$task->getId()} completed with errors");
-            // Just to make dev more happy - decorate exception ass force finish error exception
+            // Just to make dev more happy - decorate exception as force finish error exception
             if (!($exception instanceof FinishError)) {
-                $message = sprintf("\"%s\": %s (%s:%s)",
-                    get_class($exception),
+                $message = \sprintf("\"%s\": %s (%s:%s)",
+                    \get_class($exception),
                     $exception->getMessage(),
                     $exception->getFile(),
                     $exception->getLine()
@@ -133,8 +145,6 @@ class Worker extends ContainerAwareCommand
             $handler->handleExceptions($exception);
         }
 
-        $output->writeln("Task #{$task->getId()}. Stop worker. State {$task->getState()}");
-
         $handler->tearDown();
         $handler->unsetContainer();
 
@@ -142,6 +152,8 @@ class Worker extends ContainerAwareCommand
         // So if you want to save changed object in serialized form - CLONE (WTF?!!)
         $task->setHandler(clone $handler);
         $task->setWorker(0);
-        $this->getLocker()->unlock($task);
+        $task = $this->getLocker()->unlock($task);
+
+        $output->writeln("Task #{$task->getId()}. Stop worker. State {$task->getState()}");
     }
 }

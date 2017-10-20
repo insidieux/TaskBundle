@@ -20,13 +20,13 @@
   ],
   "require": {
     "php": ">=7.0",
-    "doctrine/orm": "~2.5",
-    "stof/doctrine-extensions-bundle": "~1.2",
-    "symfony/config": "~3.3",
-    "symfony/console": "~3.3",
-    "symfony/dependency-injection": "~3.3",
-    "symfony/http-kernel": "~3.3",
-    "symfony/framework-bundle": "~3.3"
+    "doctrine/orm": "^2.5",
+    "stof/doctrine-extensions-bundle": "^1.2",
+    "symfony/config": "^3.3",
+    "symfony/console": "^3.3",
+    "symfony/dependency-injection": "^3.3",
+    "symfony/http-kernel": "^3.3",
+    "symfony/framework-bundle": "^3.3"
   },
   "autoload": {
     "psr-4": {

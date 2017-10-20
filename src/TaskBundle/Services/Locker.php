@@ -1,12 +1,14 @@
 <?php
+
 namespace TaskBundle\Services;
 
-use Doctrine\ORM\EntityManager;
-use TaskBundle\Entity\Task;
-use TaskBundle\Repository\TaskRepository;
+use \Doctrine\ORM\EntityManager;
+use \TaskBundle\Entity\Task;
+use \TaskBundle\Repository\TaskRepository;
 
 /**
  * Class Locker
+ *
  * @package TaskBundle\Services
  */
 class Locker
@@ -17,7 +19,13 @@ class Locker
     private $entityManager;
 
     /**
+     * @var TaskRepository
+     */
+    private $entityRepository;
+
+    /**
      * Locker constructor.
+     *
      * @param EntityManager  $entityManager
      * @param TaskRepository $entityRepository
      */
@@ -46,6 +54,7 @@ class Locker
     /**
      * @param string $namespace
      * @param int    $worker
+     *
      * @return bool|Task
      */
     public function lock(string $namespace, int $worker)
@@ -82,10 +91,22 @@ class Locker
 
     /**
      * @param Task $task
+     *
+     * @return Task
      */
     public function unlock(Task $task)
     {
-        $this->getEntityManager()->persist($task);
-        $this->getEntityManager()->flush($task);
+        $query = "UPDATE tasks_queue SET state = :set_state, worker = :set_worker where id = :query_id";
+        $parameters = [
+            'set_state'  => $task->getState(),
+            'set_worker' => $task->getWorker(),
+            'query_id'   => $task->getId(),
+        ];
+
+        $this->getEntityManager()
+            ->getConnection()
+            ->executeUpdate($query, $parameters);
+
+        return $this->getEntityRepository()->find($task->getId());
     }
 }

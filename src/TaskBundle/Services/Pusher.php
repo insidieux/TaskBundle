@@ -1,12 +1,14 @@
 <?php
+
 namespace TaskBundle\Services;
 
-use Doctrine\ORM\EntityManager;
-use TaskBundle\Entity\Task;
-use TaskBundle\Handler\AbstractHandler;
+use \Doctrine\ORM\EntityManager;
+use \TaskBundle\Entity\Task;
+use \TaskBundle\Handler\AbstractHandler;
 
 /**
  * Class Pusher
+ *
  * @package TaskBundle\Services
  */
 class Pusher
@@ -18,6 +20,7 @@ class Pusher
 
     /**
      * Pusher constructor.
+     *
      * @param EntityManager $entityManager
      */
     public function __construct(EntityManager $entityManager)
@@ -37,6 +40,7 @@ class Pusher
      * @param AbstractHandler $handler
      * @param string          $namespace
      * @param int             $item
+     *
      * @return Task
      */
     public function push(AbstractHandler $handler, string $namespace, int $item = 0)
@@ -44,7 +48,7 @@ class Pusher
         $handler->tearDown();
         $handler->unsetContainer();
 
-        $task = new Task();
+        $task = new Task;
         $task->setNamespace($namespace);
         $task->setItem($item);
         $task->setHandler($handler);

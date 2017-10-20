@@ -8,9 +8,13 @@ The `TaskBundle` provides infrastructure for simple implementation of delayed ta
 Requirements
 ============
 * PHP 7.0 or greater
-* doctrine/orm 2.5.*
-* stof/doctrine-extensions-bundle 1.2.*
-* symfony components 3.1 or greater
+* doctrine/orm: ^2.5
+* stof/doctrine-extensions-bundle: ^1.2
+* symfony/config: ^3.3
+* symfony/console: 3.3
+* symfony/dependency-injection: ^3.3
+* symfony/http-kernel: ^3.3
+* symfony/framework-bundle: ^3.3
 
 Installation
 ============
@@ -47,11 +51,19 @@ Push created handler to queue
 $this->getContainer()->get('task.services.pusher')->push(new SomeHandler, 'namespace1');
 ```
 
+Roadmap
+=======
+* Add [symfony flex recipes](https://github.com/symfony/recipes-contrib)
+
+Changelog
+=========
+This bundle changelog [here](CHANGELOG.md)
+
 License
 =======
 This bundle is released under the [MIT license](LICENSE)
 
 Authors
 =======
-- [Ageev Pavel](mailto:ageev.pavel.v@gmail.com)
-- Barakin Alexandr
+* [Ageev Pavel](mailto:ageev.pavel.v@gmail.com)
+* Barakin Alexandr
