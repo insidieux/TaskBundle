@@ -1,10 +1,12 @@
 <?php
+
 namespace TaskBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use \Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class FilterTaskLockEvent
+ *
  * @package TaskBundle\Event
  */
 class FilterTaskLockEvent extends Event
@@ -26,6 +28,7 @@ class FilterTaskLockEvent extends Event
 
     /**
      * BeforeTaskLockEvent constructor.
+     *
      * @param string $namespace
      * @param int    $worker
      */

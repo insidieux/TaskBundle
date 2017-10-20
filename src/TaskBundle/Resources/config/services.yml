@@ -1,18 +1,27 @@
 services:
-  task.services.pusher:
-    class: TaskBundle\Services\Pusher
-    arguments:
-      - '@doctrine.orm.entity_manager'
+    task.services.pusher:
+        class: TaskBundle\Services\Pusher
+        arguments:
+            - '@doctrine.orm.entity_manager'
 
-  task.services.locker:
-    class: TaskBundle\Services\Locker
-    public: false
-    arguments:
-      - '@doctrine.orm.entity_manager'
-      - '@task.services.repository'
+    TaskBundle\Services\Pusher:
+        alias: task.services.pusher
 
-  task.services.repository:
-    class: Doctrine\ORM\EntityRepository
-    factory: ['@doctrine.orm.default_entity_manager', getRepository]
-    arguments:
-        - TaskBundle:Task
+    task.services.locker:
+        class: TaskBundle\Services\Locker
+        public: false
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@task.services.repository'
+
+    TaskBundle\Services\Locker:
+        alias: task.services.locker
+
+    task.services.repository:
+        class: Doctrine\ORM\EntityRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - TaskBundle:Task
+
+    TaskBundle\Repository\TaskRepository:
+        alias: task.services.repository

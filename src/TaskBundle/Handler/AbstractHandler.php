@@ -1,14 +1,16 @@
 <?php
+
 namespace TaskBundle\Handler;
 
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use TaskBundle\Exceptions\FinishError;
-use TaskBundle\Exceptions\FinishRetry;
-use TaskBundle\Exceptions\FinishSkip;
-use TaskBundle\Exceptions\FinishSuccess;
+use \Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use \TaskBundle\Exceptions\FinishError;
+use \TaskBundle\Exceptions\FinishRetry;
+use \TaskBundle\Exceptions\FinishSkip;
+use \TaskBundle\Exceptions\FinishSuccess;
 
 /**
  * Class AbstractHandler
+ *
  * @package TaskBundle\Handler
  */
 abstract class AbstractHandler
@@ -160,6 +162,7 @@ abstract class AbstractHandler
             return false;
         } else {
             $this->setStageInProcess($stage);
+
             return true;
         }
     }

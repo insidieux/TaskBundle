@@ -1,8 +1,10 @@
 <?php
+
 namespace TaskBundle\Services;
 
 /**
  * Class Context
+ *
  * @package TaskBundle\Services
  */
 class Context implements \JsonSerializable
@@ -28,6 +30,7 @@ class Context implements \JsonSerializable
      * Assign values with rewriting existing key values
      *
      * @param array $attributes
+     *
      * @return Context
      */
     public function assign(array $attributes): Context
@@ -35,6 +38,7 @@ class Context implements \JsonSerializable
         foreach ($attributes as $name => $value) {
             $this->attributes[$name] = $value;
         }
+
         return $this;
     }
 
@@ -42,6 +46,7 @@ class Context implements \JsonSerializable
      * Check has attribute
      *
      * @param string $attribute
+     *
      * @return bool
      */
     public function has(string $attribute): bool
@@ -60,6 +65,7 @@ class Context implements \JsonSerializable
     public function set(string $attribute, $value): Context
     {
         $this->attributes[$attribute] = $value;
+
         return $this;
     }
 
@@ -74,7 +80,8 @@ class Context implements \JsonSerializable
     public function append(string $attribute, array $value): Context
     {
         $previous = (array)$this->get($attribute, []);
-        $this->set($attribute, array_merge_recursive($previous, $value));
+        $this->set($attribute, \array_merge_recursive($previous, $value));
+
         return $this;
     }
 
@@ -83,6 +90,7 @@ class Context implements \JsonSerializable
      *
      * @param string $attribute
      * @param mixed  $default
+     *
      * @return mixed
      */
     public function get($attribute, $default = null)
