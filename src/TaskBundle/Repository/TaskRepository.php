@@ -10,6 +10,7 @@ use \TaskBundle\Entity\Task;
  *
  * @package TaskBundle\Repository
  *
+ * @method Task find($id, $lockMode = null, $lockVersion = null)
  * @method Task findOneBy(array $criteria, array $orderBy = null)
  * @method Task[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */

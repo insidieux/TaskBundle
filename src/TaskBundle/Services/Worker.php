@@ -151,7 +151,6 @@ class Worker extends ContainerAwareCommand
         // It's a magic, it's a maaaagic! Doctrine cannot check serialized object was changed
         // So if you want to save changed object in serialized form - CLONE (WTF?!!)
         $task->setHandler(clone $handler);
-        $task->setWorker(0);
         $task = $this->getLocker()->unlock($task);
 
         $output->writeln("Task #{$task->getId()}. Stop worker. State {$task->getState()}");
