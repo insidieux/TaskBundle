@@ -96,17 +96,13 @@ class Locker
      */
     public function unlock(Task $task)
     {
-        $query = "UPDATE tasks_queue SET state = :set_state, worker = :set_worker where id = :query_id";
-        $parameters = [
-            'set_state'  => $task->getState(),
-            'set_worker' => $task->getWorker(),
-            'query_id'   => $task->getId(),
-        ];
+        if ($this->getEntityManager()->contains($task) === false) {
+            $this->getEntityManager()->persist($task);
+        }
+        $task->setWorker(0);
+        $this->getEntityManager()->flush($task);
+        $this->getEntityManager()->refresh($task);
 
-        $this->getEntityManager()
-            ->getConnection()
-            ->executeUpdate($query, $parameters);
-
-        return $this->getEntityRepository()->find($task->getId());
+        return $task;
     }
 }
