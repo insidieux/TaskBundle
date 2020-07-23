@@ -65,7 +65,7 @@ class Locker
             return false;
         }
 
-        $query = "UPDATE tasks_queue SET state = :set_state, worker = :set_worker WHERE id IN (SELECT id FROM tasks_queue WHERE state = :query_state AND worker = :query_worker AND namespace = :query_namespace ORDER BY updated ASC LIMIT 1)";
+        $query = "UPDATE tasks_queue SET state = :set_state, worker = :set_worker WHERE id IN (SELECT id FROM tasks_queue WHERE state = :query_state AND worker = :query_worker AND namespace = :query_namespace ORDER BY updated ASC LIMIT 1 FOR UPDATE)";
         $parameters = [
             'set_state'       => Task::STATE_PROCESS,
             'set_worker'      => $worker,
