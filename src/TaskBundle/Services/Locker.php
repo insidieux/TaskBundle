@@ -76,7 +76,7 @@ class Locker
 
         $lock = $this->getEntityManager()
             ->getConnection()
-            ->executeUpdate($query, $parameters);
+            ->executeStatement($query, $parameters);
         if ($lock === 0) {
             return false;
         }

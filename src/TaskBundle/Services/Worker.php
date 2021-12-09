@@ -2,10 +2,12 @@
 
 namespace TaskBundle\Services;
 
-use \Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use \Symfony\Component\Console\Input\InputInterface;
 use \Symfony\Component\Console\Input\InputOption;
 use \Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use \TaskBundle\Event\FilterTaskLockEvent;
 use \TaskBundle\Exceptions\FinishError;
 use \TaskBundle\Exceptions\FinishRetry;
@@ -17,7 +19,7 @@ use \TaskBundle\Exceptions\FinishSuccess;
  *
  * @package TaskBundle\Services
  */
-class Worker extends ContainerAwareCommand
+class Worker extends Command implements ContainerAwareInterface
 {
     /**
      * @var Locker
@@ -35,6 +37,11 @@ class Worker extends ContainerAwareCommand
     private $debug;
 
     /**
+     * @var ContainerInterface|null
+     */
+    private $container;
+
+    /**
      * Worker constructor.
      *
      * @param Locker $locker
@@ -47,6 +54,33 @@ class Worker extends ContainerAwareCommand
         $this->namespace = $namespace;
         $this->debug = $debug;
         parent::__construct(\sprintf('task:worker:%s', $namespace));
+    }
+
+    /**
+     * @return ContainerInterface
+     *
+     * @throws \LogicException
+     */
+    protected function getContainer()
+    {
+        if (null === $this->container) {
+            $application = $this->getApplication();
+            if (null === $application) {
+                throw new \LogicException('The container cannot be retrieved as the application instance is not yet set.');
+            }
+
+            $this->container = $application->getKernel()->getContainer();
+        }
+
+        return $this->container;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
     }
 
     /**
