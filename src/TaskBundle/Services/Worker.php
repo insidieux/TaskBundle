@@ -129,7 +129,7 @@ class Worker extends Command implements ContainerAwareInterface
                 $output->writeln("Another service asked to stop process queue");
             }
 
-            return;
+            return 1;
         }
 
         $task = $this->getLocker()->lock($this->getNamespace(), $input->getOption('id'));
@@ -138,7 +138,7 @@ class Worker extends Command implements ContainerAwareInterface
                 $output->writeln("Empty tasks queue, exit");
             }
 
-            return;
+            return 1;
         }
 
         $output->writeln("Task #{$task->getId()}. Start worker");
@@ -188,5 +188,7 @@ class Worker extends Command implements ContainerAwareInterface
         $task = $this->getLocker()->unlock($task);
 
         $output->writeln("Task #{$task->getId()}. Stop worker. State {$task->getState()}");
+
+        return 0;
     }
 }
