@@ -122,7 +122,7 @@ class Worker extends Command implements ContainerAwareInterface
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $event = new FilterTaskLockEvent($this->getNamespace(), $input->getOption('id'));
-        $this->getContainer()->get('event_dispatcher')->dispatch(FilterTaskLockEvent::NAME, $event);
+        $this->getContainer()->get('event_dispatcher')->dispatch($event, FilterTaskLockEvent::NAME);
 
         if ($event->isPropagationStopped() === true) {
             if ($this->isDebug() === true) {
