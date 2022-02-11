@@ -2,10 +2,12 @@
 
 namespace TaskBundle\Services;
 
-use \Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use \Symfony\Component\Console\Input\InputInterface;
 use \Symfony\Component\Console\Input\InputOption;
 use \Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use \TaskBundle\Event\FilterTaskLockEvent;
 use \TaskBundle\Exceptions\FinishError;
 use \TaskBundle\Exceptions\FinishRetry;
@@ -17,7 +19,7 @@ use \TaskBundle\Exceptions\FinishSuccess;
  *
  * @package TaskBundle\Services
  */
-class Worker extends ContainerAwareCommand
+class Worker extends Command implements ContainerAwareInterface
 {
     /**
      * @var Locker
@@ -35,6 +37,11 @@ class Worker extends ContainerAwareCommand
     private $debug;
 
     /**
+     * @var ContainerInterface|null
+     */
+    private $container;
+
+    /**
      * Worker constructor.
      *
      * @param Locker $locker
@@ -47,6 +54,33 @@ class Worker extends ContainerAwareCommand
         $this->namespace = $namespace;
         $this->debug = $debug;
         parent::__construct(\sprintf('task:worker:%s', $namespace));
+    }
+
+    /**
+     * @return ContainerInterface
+     *
+     * @throws \LogicException
+     */
+    protected function getContainer()
+    {
+        if (null === $this->container) {
+            $application = $this->getApplication();
+            if (null === $application) {
+                throw new \LogicException('The container cannot be retrieved as the application instance is not yet set.');
+            }
+
+            $this->container = $application->getKernel()->getContainer();
+        }
+
+        return $this->container;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
     }
 
     /**
@@ -88,14 +122,14 @@ class Worker extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $event = new FilterTaskLockEvent($this->getNamespace(), $input->getOption('id'));
-        $this->getContainer()->get('event_dispatcher')->dispatch(FilterTaskLockEvent::NAME, $event);
+        $this->getContainer()->get('event_dispatcher')->dispatch($event, FilterTaskLockEvent::NAME);
 
         if ($event->isPropagationStopped() === true) {
             if ($this->isDebug() === true) {
                 $output->writeln("Another service asked to stop process queue");
             }
 
-            return;
+            return 0;
         }
 
         $task = $this->getLocker()->lock($this->getNamespace(), $input->getOption('id'));
@@ -104,7 +138,7 @@ class Worker extends ContainerAwareCommand
                 $output->writeln("Empty tasks queue, exit");
             }
 
-            return;
+            return 0;
         }
 
         $output->writeln("Task #{$task->getId()}. Start worker");
@@ -154,5 +188,7 @@ class Worker extends ContainerAwareCommand
         $task = $this->getLocker()->unlock($task);
 
         $output->writeln("Task #{$task->getId()}. Stop worker. State {$task->getState()}");
+
+        return 0;
     }
 }
